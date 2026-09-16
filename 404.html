@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CLASSIFIED // RAP BATTLE</title>
 <style>
-:root{--red:#e3262e;--paper:#e8e2d5;--ink:#0a0a0a}
+:root{--red:#e3262e;--paper:#e8e2d5}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#050505;color:var(--paper);font-family:Arial Black,Impact,sans-serif}
 body{overflow-x:hidden}
@@ -22,7 +22,6 @@ label{display:block;color:var(--red);font-size:12px;letter-spacing:2px;margin:22
 input{width:100%;padding:15px;background:#111;color:#fff;border:2px solid #777;font-size:20px;font-weight:700;outline:none}
 input:focus{border-color:var(--red)}
 button{margin-top:14px;width:100%;padding:16px;border:0;background:var(--red);color:#fff;font-weight:900;font-size:17px;letter-spacing:1px;cursor:pointer}
-button:hover{filter:brightness(1.15)}
 .error{color:#ff5555;font-family:Arial,sans-serif;margin-top:12px;display:none}
 .hidden{display:none!important}
 .count{font-size:clamp(100px,30vw,230px);line-height:.8;color:var(--red);text-align:center;text-shadow:5px 0 #fff,-4px 0 #000;margin:35px 0}
@@ -39,11 +38,10 @@ button:hover{filter:brightness(1.15)}
 <div class="kicker">BOOTLEG ARCHIVE // CLASSIFIED TAPE</div>
 <h1>RAP<br>BATTLE</h1>
 <p><b>WHO ARE YOU?</b></p>
-<p>PRIVATE MESSAGE. DO NOT OPEN IN FRONT OF THE CREW.<br>
-YOUR NAME IS THE PASSWORD.</p>
+<p>PRIVATE MESSAGE. DO NOT OPEN IN FRONT OF THE CREW.<br>YOUR NAME IS THE PASSWORD.</p>
 <label for="name">ENTER YOUR NAME</label>
-<input id="name" autocomplete="off" autocapitalize="words" placeholder="np. Przemek">
-<button onclick="access()">ACCESS THE TAPE ▶</button>
+<input id="name" autocomplete="off" autocapitalize="words" placeholder="np. Jakub">
+<button id="accessBtn" type="button">ACCESS THE TAPE ▶</button>
 <div class="error" id="error">ACCESS DENIED // WRONG NAME</div>
 <div class="footer">WARNING: THIS TAPE CONTAINS CLASSIFIED EVENT INFORMATION.</div>
 </section>
@@ -66,34 +64,42 @@ YOUR NAME IS THE PASSWORD.</p>
 </div>
 
 <script>
-const K=[48,179,42,64,49,65,31,118,88,76,109,213,111,23,21,129,68,168,161,209,53,203,81,69,181,83,92,175,243,12,40,110];
+const K=[117,16,58,234,189,105,61,238,117,139,89,45,151,15,38,227,133,23,216,93,159,41,198,123,103,51,76,235,116,30,187,166];
 const DATA={
-'przemek':[64,193,80,37,92,36,116,98,210,76,33,93,97,82],'alek':[81,223,79,43,125,214,76,38],'waldi':[71,210,70,36,88,101,195,67,37,67,59],'rafal-b':[66,210,76,33,93,108,125,96,193,80,37,92,36,116],'rafal-m':[66,210,76,33,93,108,114,103,210,70,36,88],'maciek':[93,210,73,41,84,42,98,210,76,33,93,97,93],'upierz':[69,195,67,37,67,59,125,210,73,41,84,42],'meff':[93,214,76,38,113,223,79,43]
+'przemek':[37,98,64,143,208,12,86,39,113,92,139,209,73,112],
+'alek':[52,124,95,129,56,117,92,140],
+'waldi':[34,113,86,142,212,32,96,83,143,207,19],
+'rafal-b':[39,113,92,139,209,73,127,37,98,64,143,208,12,86],
+'rafal-m':[39,113,92,139,209,73,112,34,113,86,142,212],
+'maciek':[56,113,89,131,216,2,39,113,92,139,209,73,127],
+'upierz':[63,113,81,159,223,56,113,89,131,216,2],
+'meff':[56,117,92,140,52,124,95,129]
 };
-function dec(a){return String.fromCharCode(...a.map((x,i)=>x^K[i%K.length]))}
-function norm(s){return s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
-const path=location.pathname.split("/").filter(Boolean).pop()||"";
-const record=DATA[path]||null;
 
-const LOGIN_NAMES={
-  przemek:["przemek"],
-  alek:["alek","aleksander"],
-  waldi:["waldi"],
-  "rafal-b":["rafal","rafał","rafal b"],
-  "rafal-m":["rafal","rafał","rafal m"],
-  maciek:["maciek"],
-  upierz:["upierz","jakub","jakub irzynski","jakub irzyński"],
-  meff:["meff"]
-};
-function access(){
-  const entered=norm(document.getElementById("name").value);
-  const allowed=record && (entered===dec(record[0]) || (LOGIN_NAMES[path]||[]).some(x=>norm(x)===entered));
-  if(!allowed){
-    const e=document.getElementById("error"); e.style.display="block"; return;
+function dec(a) {
+  return String.fromCharCode(...a.map((x,i)=>x^K[i%K.length]));
+}
+function norm(s) {
+  return s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+const path = location.pathname.split("/").filter(Boolean).pop() || "";
+const record = DATA[path] || null;
+
+function access() {
+  const entered = norm(document.getElementById("name").value);
+  if (!record || entered !== norm(dec(record[0]))) {
+    document.getElementById("error").style.display="block";
+    return;
   }
+  document.getElementById("error").style.display="none";
   document.getElementById("login").classList.add("hidden");
   document.getElementById("countdown").classList.remove("hidden");
-  let n=3; const c=document.getElementById("count"); c.textContent=n;
+
+  let n=3;
+  const c=document.getElementById("count");
+  c.textContent=n;
+
   const timer=setInterval(()=>{
     n--;
     if(n>0) c.textContent=n;
@@ -105,7 +111,9 @@ function access(){
     }
   },900);
 }
-document.getElementById("name").addEventListener("keydown",e=>{if(e.key==="Enter")access()});
+
+document.getElementById("accessBtn").addEventListener("click", access);
+document.getElementById("name").addEventListener("keydown", e=>{if(e.key==="Enter") access();});
 </script>
 </body>
 </html>
