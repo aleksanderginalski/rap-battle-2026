@@ -75,9 +75,20 @@ function norm(s){return s.toLowerCase().trim().normalize("NFD").replace(/[\u0300
 const path=location.pathname.split("/").filter(Boolean).pop()||"";
 const record=DATA[path]||null;
 
+const LOGIN_NAMES={
+  przemek:["przemek"],
+  alek:["alek","aleksander"],
+  waldi:["waldi"],
+  "rafal-b":["rafal","rafał","rafal b"],
+  "rafal-m":["rafal","rafał","rafal m"],
+  maciek:["maciek"],
+  upierz:["upierz","jakub","jakub irzynski","jakub irzyński"],
+  meff:["meff"]
+};
 function access(){
   const entered=norm(document.getElementById("name").value);
-  if(!record || entered!==dec(record[0])){
+  const allowed=record && (entered===dec(record[0]) || (LOGIN_NAMES[path]||[]).some(x=>norm(x)===entered));
+  if(!allowed){
     const e=document.getElementById("error"); e.style.display="block"; return;
   }
   document.getElementById("login").classList.add("hidden");
