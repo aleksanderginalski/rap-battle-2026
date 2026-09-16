@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CLASSIFIED // RAP BATTLE</title>
+<style>
+:root{--red:#e3262e;--paper:#e8e2d5;--ink:#0a0a0a}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#050505;color:var(--paper);font-family:Arial Black,Impact,sans-serif}
+body{overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0,rgba(255,255,255,.035) 1px,transparent 1px,transparent 4px);mix-blend-mode:screen}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:21;box-shadow:inset 0 0 110px #000}
+.wrap{min-height:100vh;display:grid;place-items:center;padding:22px}
+.panel{width:min(720px,100%);border:2px solid var(--paper);padding:24px;background:#0b0b0b;box-shadow:9px 9px 0 var(--red);position:relative}
+.stamp{position:absolute;right:14px;top:14px;border:2px solid var(--red);color:var(--red);padding:5px 8px;transform:rotate(-4deg);font-size:12px;letter-spacing:2px}
+.kicker{color:var(--red);font-size:13px;letter-spacing:3px;margin-bottom:12px}
+h1{font-size:clamp(38px,9vw,78px);line-height:.86;margin:0 0 24px;text-transform:uppercase;text-shadow:3px 0 var(--red),-2px 0 #fff;letter-spacing:-2px}
+h2{font-size:clamp(28px,7vw,56px);line-height:.9;margin:8px 0 20px}
+p{font-family:Arial,sans-serif;line-height:1.45;max-width:600px}
+label{display:block;color:var(--red);font-size:12px;letter-spacing:2px;margin:22px 0 7px}
+input{width:100%;padding:15px;background:#111;color:#fff;border:2px solid #777;font-size:20px;font-weight:700;outline:none}
+input:focus{border-color:var(--red)}
+button{margin-top:14px;width:100%;padding:16px;border:0;background:var(--red);color:#fff;font-weight:900;font-size:17px;letter-spacing:1px;cursor:pointer}
+button:hover{filter:brightness(1.15)}
+.error{color:#ff5555;font-family:Arial,sans-serif;margin-top:12px;display:none}
+.hidden{display:none!important}
+.count{font-size:clamp(100px,30vw,230px);line-height:.8;color:var(--red);text-align:center;text-shadow:5px 0 #fff,-4px 0 #000;margin:35px 0}
+.assignment{font-size:clamp(48px,12vw,100px);line-height:.85;color:#fff;text-transform:uppercase;text-shadow:5px 0 var(--red),-3px 0 #000;word-break:break-word}
+.footer{margin-top:30px;color:#888;font:11px monospace;letter-spacing:1px}
+@keyframes glitch{0%,100%{transform:translate(0)}20%{transform:translate(-2px,1px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,-2px)}80%{transform:translate(1px,2px)}}
+.glitch{animation:glitch .18s infinite}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="panel" id="login">
+<div class="stamp">REC // 2026</div>
+<div class="kicker">BOOTLEG ARCHIVE // CLASSIFIED TAPE</div>
+<h1>RAP<br>BATTLE</h1>
+<p><b>WHO ARE YOU?</b></p>
+<p>PRIVATE MESSAGE. DO NOT OPEN IN FRONT OF THE CREW.<br>
+YOUR NAME IS THE PASSWORD.</p>
+<label for="name">ENTER YOUR NAME</label>
+<input id="name" autocomplete="off" autocapitalize="words" placeholder="np. Przemek">
+<button onclick="access()">ACCESS THE TAPE ▶</button>
+<div class="error" id="error">ACCESS DENIED // WRONG NAME</div>
+<div class="footer">WARNING: THIS TAPE CONTAINS CLASSIFIED EVENT INFORMATION.</div>
+</section>
+
+<section class="panel hidden" id="countdown">
+<div class="kicker">ACCESS GRANTED</div>
+<h2>THE TAPE<br>KNOWS YOUR NAME.</h2>
+<div class="count glitch" id="count">3</div>
+<p style="text-align:center">DECODING CLASSIFIED ASSIGNMENT...</p>
+</section>
+
+<section class="panel hidden" id="reveal">
+<div class="stamp">TOP SECRET</div>
+<div class="kicker">YOUR ASSIGNMENT</div>
+<p>TONIGHT, YOU ARE</p>
+<div class="assignment glitch" id="assignment"></div>
+<p style="margin-top:35px"><b>NOW GO BUILD THE OUTFIT.</b></p>
+<div class="footer">END OF TRANSMISSION // RAP BATTLE 2026</div>
+</section>
+</div>
+
+<script>
+const K=[48,179,42,64,49,65,31,118,88,76,109,213,111,23,21,129,68,168,161,209,53,203,81,69,181,83,92,175,243,12,40,110];
+const DATA={
+'przemek':[64,193,80,37,92,36,116,98,210,76,33,93,97,82],'alek':[81,223,79,43,125,214,76,38],'waldi':[71,210,70,36,88,101,195,67,37,67,59],'rafal-b':[66,210,76,33,93,108,125,96,193,80,37,92,36,116],'rafal-m':[66,210,76,33,93,108,114,103,210,70,36,88],'maciek':[93,210,73,41,84,42,98,210,76,33,93,97,93],'upierz':[69,195,67,37,67,59,125,210,73,41,84,42],'meff':[93,214,76,38,113,223,79,43]
+};
+function dec(a){return String.fromCharCode(...a.map((x,i)=>x^K[i%K.length]))}
+function norm(s){return s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+const path=location.pathname.split("/").filter(Boolean).pop()||"";
+const record=DATA[path]||null;
+
+function access(){
+  const entered=norm(document.getElementById("name").value);
+  if(!record || entered!==dec(record[0])){
+    const e=document.getElementById("error"); e.style.display="block"; return;
+  }
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("countdown").classList.remove("hidden");
+  let n=3; const c=document.getElementById("count"); c.textContent=n;
+  const timer=setInterval(()=>{
+    n--;
+    if(n>0) c.textContent=n;
+    else {
+      clearInterval(timer);
+      document.getElementById("countdown").classList.add("hidden");
+      document.getElementById("reveal").classList.remove("hidden");
+      document.getElementById("assignment").textContent=dec(record[1]);
+    }
+  },900);
+}
+document.getElementById("name").addEventListener("keydown",e=>{if(e.key==="Enter")access()});
+</script>
+</body>
+</html>
